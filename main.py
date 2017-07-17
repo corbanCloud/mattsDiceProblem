@@ -19,6 +19,7 @@ parser = argparse.ArgumentParser(description='Description of your program')
 parser.add_argument('-g','--green', help='Description for foo argument', required=True, type=natural_number)
 parser.add_argument('-r','--red', help='Description for bar argument', required=True, type=natural_number)
 parser.add_argument('-y','--yellow', help='Description for bar argument', required=True, type=natural_number)
+parser.add_argument('-s','--samplesize', help='Description for bar argument', required=True, type=natural_number)
 args = vars(parser.parse_args())
 #sssssshhhhhh just let this happen for now
 args['blue'] = 1
@@ -62,27 +63,42 @@ dice = {
 }
 
 # Our dictionary for storing roll values
-rollvalues = {
-  'blue' : [],
-  'red' : [],
-  'green' : [],
-  'yellow' : [],
-}
-
+sample = []
+# surgesize : frequency
+surges = {}
 # name should be a key form the dice dictionary
-def roll(name):
+def roll(name, store):
   # get the die
   die = dice[name]
   # pick a random face, and get that value
   value = die[random.choice(list(die))]
   # add that to the roll history
-  rollvalues[name].append(value)
+  store[name].append(value)
   return value
 
-# for each one of our die
-for dieName in ['blue', 'green','yellow','red']:
-    # roll it how ever many times the CLI args indicated
-    for x in range(args[dieName]):
-      roll(dieName)
+for i in range(args['samplesize']):
+    simulation = {
+     'blue' : [],
+     'green' : [],
+     'yellow' : [],
+     'red' : []
+    }
+    # for each one of our die
+    for dieName in simulation:
+        # roll it how ever many times the CLI args indicated
+        for x in range(args[dieName]):
+          roll(dieName, simulation)
 
-pp.pprint(rollvalues)
+    sample.append(simulation)
+    for dieName, outcomes in simulation.items():
+        surgesize = sum(i > 99 for i in outcomes)
+        if surgesize in surges:
+            surges[surgesize] += 1
+        else:
+            surges[surgesize] = 1
+
+print("--- Sample Data Generated  ---")
+pp.pprint(sample)
+print("--- Surge Occurences ---")
+print("(Quantity of Surges in a set vs Total Occurences Of That Quantity)")
+pp.pprint(surges)
