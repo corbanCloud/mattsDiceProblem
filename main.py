@@ -83,6 +83,7 @@ for i in range(args['samplesize']):
      'yellow' : [],
      'red' : []
     }
+    wholeset = []
     # for each one of our die
     for dieName in simulation:
         # roll it how ever many times the CLI args indicated
@@ -91,11 +92,13 @@ for i in range(args['samplesize']):
 
     sample.append(simulation)
     for dieName, outcomes in simulation.items():
-        surgesize = sum(i > 99 for i in outcomes)
-        if surgesize in surges:
-            surges[surgesize] += 1
-        else:
-            surges[surgesize] = 1
+        wholeset += outcomes
+
+    surgesize = sum(i > 99 for i in wholeset)
+    if surgesize in surges:
+        surges[surgesize] += 1
+    else:
+        surges[surgesize] = 1
 
 print("--- Sample Data Generated  ---")
 pp.pprint(sample)
